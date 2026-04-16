@@ -58,7 +58,14 @@ function doPost(e) {
   };
 
   try {
-    const data = JSON.parse(e.postData.contents);
+    // const data = JSON.parse(e.postData.contents);
+    let data;
+    // JSON aaya ya form-encoded?
+    if (e.postData.type === 'application/json') {
+      data = JSON.parse(e.postData.contents);
+    } else {
+      data = e.parameter;
+    }
     let result;
 
     if (data.action === 'sendAlert') {

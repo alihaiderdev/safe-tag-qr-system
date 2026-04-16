@@ -529,7 +529,8 @@
     <p style="color:#555; font-size:14px;">Your unique SafeTag ID has been generated</p>
     <div class="unique-id" id="display-uid">PP-1001</div>
     <div class="qr-box">
-      <img id="qr-img" src="" alt="QR Code">
+      <!-- <img id="qr-img" src="" alt="QR Code"> -->
+         <div id="qr-img"></div>
     </div>
     <p style="font-size:13px; color:#555; margin-bottom:16px;">Scan this QR code or stick it on your ID/vehicle/pet tag</p>
     <button onclick="window.print()" style="padding:10px 20px; background:#1a2744; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; margin-right:8px;">🖨️ Print QR</button>
@@ -538,7 +539,7 @@
   </div>
 
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby7Avj0decxsufEqgEFGpKt72pPSpVZj9L4aXh_XdpTeCzwSY4NBPcHT7t00rc0LrWVag/exec';
   const LANDING_PAGE_URL = 'https://alihaiderdev.github.io/safe-tag-qr-system/landing';
@@ -639,10 +640,17 @@
     btn.innerHTML = '<span class="spinner"></span>Registering...';
 
     try {
+      // const response = await fetch(APPS_SCRIPT_URL, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(data)
+      // });
+      const formData = new URLSearchParams();
+      Object.entries(data).forEach(([k, v]) => formData.append(k, v));
+
       const response = await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: formData   // JSON nahi, form-encoded
       });
       const result = await response.json();
 
@@ -661,28 +669,60 @@
     btn.innerHTML = '🔒 Register & Generate QR Code';
   }
 
+  // function generateDemoId() {
+  //   const prefix = currentTab === 'Individual' ? 'PP' : currentTab === 'Vehicle' ? 'VH' : 'PT';
+  //   const num = Math.floor(Math.random() * 8999) + 1001;
+  //   return prefix + '-' + num;
+  // }
+
   function generateDemoId() {
-    const prefix = currentTab === 'Individual' ? 'PP' : currentTab === 'Vehicle' ? 'VH' : 'PT';
+    const prefix = currentTab === 'individual' ? 'PP' : currentTab === 'vehicle' ? 'VH' : 'PT';
     const num = Math.floor(Math.random() * 8999) + 1001;
     return prefix + '-' + num;
   }
 
+  // function showSuccess(uniqueId) {
+  //   document.getElementById('display-uid').textContent = uniqueId;
+  //   const landingUrl = LANDING_PAGE_URL + '?ID=' + uniqueId;
+  //   const qrUrl = 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + encodeURIComponent(landingUrl);
+  //   document.getElementById('qr-img').src = qrUrl;
+  //   document.getElementById('success-card').classList.add('show');
+  //   document.getElementById('success-card').scrollIntoView({ behavior: 'smooth' });
+  // }
   function showSuccess(uniqueId) {
-    document.getElementById('display-uid').textContent = uniqueId;
-    const landingUrl = LANDING_PAGE_URL + '?ID=' + uniqueId;
-    const qrUrl = 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + encodeURIComponent(landingUrl);
-    document.getElementById('qr-img').src = qrUrl;
-    document.getElementById('success-card').classList.add('show');
-    document.getElementById('success-card').scrollIntoView({ behavior: 'smooth' });
-  }
+  document.getElementById('display-uid').textContent = uniqueId;
+  const landingUrl = LANDING_PAGE_URL + '?ID=' + uniqueId;
+  
+  // QR generate karo
+  const qrContainer = document.getElementById('qr-img');
+  qrContainer.innerHTML = ''; // pehle clear karo
+  new QRCode(qrContainer, {
+    text: landingUrl,
+    width: 180,
+    height: 180,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+  });
 
+  document.getElementById('success-card').classList.add('show');
+  document.getElementById('success-card').scrollIntoView({ behavior: 'smooth' });
+}
+
+  // function downloadQR() {
+  //   const img = document.getElementById('qr-img');
+  //   const link = document.createElement('a');
+  //   link.download = document.getElementById('display-uid').textContent + '-QR.png';
+  //   link.href = img.src;
+  //   link.click();
+  // }
   function downloadQR() {
-    const img = document.getElementById('qr-img');
-    const link = document.createElement('a');
-    link.download = document.getElementById('display-uid').textContent + '-QR.png';
-    link.href = img.src;
-    link.click();
-  }
+  const canvas = document.querySelector('#qr-img canvas');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = document.getElementById('display-uid').textContent + '-QR.png';
+  link.href = canvas.toDataURL();
+  link.click();
+}
 </script>
 </body>
 </html>
