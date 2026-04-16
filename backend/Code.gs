@@ -15,8 +15,8 @@
 
 const CONFIG = {
   SPREADSHEET_ID: SpreadsheetApp.getActiveSpreadsheet().getId(),
-  LANDING_PAGE_URL: 'https://YOUR-GITHUB-PAGES-OR-SITES-URL/landing/index.html',
-  ALERT_FORM_URL:   'https://YOUR-GITHUB-PAGES-OR-SITES-URL/alert/index.html',
+  LANDING_PAGE_URL: 'https://alihaiderdev.github.io/safe-tag-qr-system/landing',
+  ALERT_FORM_URL:   'https://alihaiderdev.github.io/safe-tag-qr-system/alert',
 
   // Email settings
   SEND_EMAIL_ALERTS: true,
