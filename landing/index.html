@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafeTag – QR Scan Page</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0d1b2a;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+
+  .brand {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .brand-icon {
+    width: 64px; height: 64px;
+    background: #fff;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+  }
+  .brand h1 { font-size: 26px; font-weight: 700; letter-spacing: 0.5px; }
+  .brand p { font-size: 14px; opacity: 0.6; margin-top: 4px; }
+
+  .id-badge {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-bottom: 36px;
+    color: #a8c5ff;
+  }
+
+  .question {
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 28px;
+    opacity: 0.9;
+    line-height: 1.5;
+  }
+
+  .btn-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .main-btn {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 22px 24px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .main-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+  }
+  .main-btn:active { transform: scale(0.97); }
+
+  .btn-emergency {
+    background: linear-gradient(135deg, #e63946, #c1121f);
+  }
+  .btn-parking {
+    background: linear-gradient(135deg, #e9a11a, #b07d10);
+  }
+
+  .btn-icon-circle {
+    width: 52px; height: 52px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+
+  .btn-text { text-align: left; }
+  .btn-text span { display: block; font-size: 13px; font-weight: 400; opacity: 0.8; margin-top: 3px; }
+
+  .pulse-ring {
+    position: absolute;
+    top: 50%; left: 20px;
+    transform: translate(-50%, -50%);
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.5);
+    animation: pulse 1.5s infinite;
+    pointer-events: none;
+  }
+  @keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+  }
+
+  .footer-note {
+    margin-top: 40px;
+    font-size: 12px;
+    opacity: 0.4;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .divider {
+    width: 100%;
+    max-width: 380px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.3;
+    margin: 4px 0;
+  }
+  .divider-line { flex: 1; height: 1px; background: #fff; }
+  .divider-text { font-size: 12px; font-weight: 600; }
+
+  .loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(13,27,42,0.95);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  .loading-overlay.show { display: flex; }
+  .spinner-lg {
+    width: 50px; height: 50px;
+    border: 4px solid rgba(255,255,255,0.2);
+    border-top-color: #e63946;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="brand">
+  <div class="brand-icon">🏷️</div>
+  <h1>SafeTag</h1>
+  <p>Emergency Response System</p>
+</div>
+
+<div class="id-badge" id="id-display">Loading...</div>
+
+<p class="question">You scanned a SafeTag QR.<br>What do you need to report?</p>
+
+<div class="btn-grid">
+
+  <a class="main-btn btn-emergency" id="btn-emergency" href="#" onclick="goToAlert('emergency'); return false;">
+    <div class="pulse-ring"></div>
+    <div class="btn-icon-circle">🚨</div>
+    <div class="btn-text">
+      EMERGENCY
+      <span>Medical help, accident, theft, or danger</span>
+    </div>
+  </a>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-text">OR</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <a class="main-btn btn-parking" id="btn-parking" href="#" onclick="goToAlert('parking'); return false;">
+    <div class="btn-icon-circle">🚗</div>
+    <div class="btn-text">
+      PARKING / ISSUE
+      <span>Vehicle blocking, wrong parking, minor issue</span>
+    </div>
+  </a>
+
+</div>
+
+<div class="footer-note">
+  This QR is linked to a registered SafeTag ID.<br>
+  Your identity is not required to send a report.<br>
+  All alerts are sent directly to the registered owner.
+</div>
+
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner-lg"></div>
+  <p>Sending alert...</p>
+</div>
+
+<script>
+  const ALERT_FORM_URL = 'alert.html';
+
+  function getURLParam(key) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(key) || 'PP-DEMO';
+  }
+
+  const uniqueId = getURLParam('ID');
+  document.getElementById('id-display').textContent = '🏷️ ' + uniqueId;
+
+  function goToAlert(type) {
+    const url = ALERT_FORM_URL + '?ID=' + uniqueId + '&type=' + type;
+    window.location.href = url;
+  }
+</script>
+</body>
+</html>

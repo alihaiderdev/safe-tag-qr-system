@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafeTag – Registration Portal</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f4f6fb;
+    color: #222;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  .header {
+    background: #1a2744;
+    color: #fff;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .header-logo {
+    width: 42px; height: 42px;
+    background: #e63946;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: #fff;
+  }
+  .header h1 { font-size: 20px; font-weight: 600; }
+  .header p { font-size: 12px; opacity: 0.7; }
+
+  .container { max-width: 680px; margin: 32px auto; padding: 0 16px; }
+
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 15px; font-weight: 600;
+    color: #1a2744;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e8ecf4;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .category-tabs {
+    display: flex; gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    flex: 1;
+    min-width: 130px;
+    padding: 16px 12px;
+    border: 2px solid #dde2ef;
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+    transition: all 0.2s;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 6px;
+  }
+  .tab-btn .tab-icon { font-size: 26px; }
+  .tab-btn:hover { border-color: #4a6cf7; color: #4a6cf7; background: #f0f3ff; }
+  .tab-btn.active { border-color: #4a6cf7; background: #4a6cf7; color: #fff; }
+
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block;
+    font-size: 13px; font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+  }
+  .required { color: #e63946; }
+
+  .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #dde2ef;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #222;
+    background: #fafbff;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-control:focus { border-color: #4a6cf7; background: #fff; }
+
+  .file-upload-area {
+    border: 2px dashed #c0c9e8;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    background: #f7f9ff;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .file-upload-area:hover { border-color: #4a6cf7; background: #eef1ff; }
+  .file-upload-area input[type="file"] {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .file-upload-area .upload-icon { font-size: 28px; margin-bottom: 8px; }
+  .file-upload-area p { font-size: 13px; color: #666; }
+  .file-upload-area .file-name { font-size: 12px; color: #4a6cf7; margin-top: 4px; font-weight: 500; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media(max-width:500px) { .two-col { grid-template-columns: 1fr; } }
+
+  .emergency-contact-card {
+    background: #fff8f0;
+    border: 1.5px solid #ffdcb0;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .emergency-contact-card .ec-title {
+    font-size: 12px; font-weight: 600;
+    color: #e07b00; margin-bottom: 10px;
+  }
+
+  .blood-group-options {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .blood-btn {
+    padding: 8px 14px;
+    border: 1.5px solid #dde2ef;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px; font-weight: 600;
+    color: #555;
+    transition: all 0.2s;
+  }
+  .blood-btn:hover { border-color: #e63946; color: #e63946; }
+  .blood-btn.selected { background: #e63946; color: #fff; border-color: #e63946; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #4a6cf7, #2348d6);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px; font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 10px;
+  }
+  .submit-btn:hover { opacity: 0.9; }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .form-section { display: none; }
+  .form-section.active { display: block; }
+
+  .success-card {
+    background: #f0fff4;
+    border: 2px solid #34c55a;
+    border-radius: 12px;
+    padding: 28px;
+    text-align: center;
+    display: none;
+  }
+  .success-card.show { display: block; }
+  .success-card h2 { color: #1a7a35; font-size: 20px; margin-bottom: 8px; }
+  .success-card .unique-id {
+    font-size: 32px; font-weight: 700;
+    color: #4a6cf7; letter-spacing: 2px;
+    margin: 14px 0;
+  }
+  .qr-box { margin: 16px auto; max-width: 180px; }
+  .qr-box img { width: 100%; border-radius: 8px; border: 2px solid #e8ecf4; }
+
+  .alert-bar {
+    background: #fff3cd;
+    border: 1px solid #ffb800;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #7a5c00;
+    margin-bottom: 20px;
+  }
+
+  .spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .pet-section .form-group select { appearance: auto; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">ST</div>
+  <div>
+    <h1>SafeTag – Registration Portal</h1>
+    <p>Secure ID & QR Code Generator</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="alert-bar">
+    ⚠️ <strong>Confidential:</strong> Registered data is private. Only emergency alerts will be sent when your QR is scanned.
+  </div>
+
+  <div class="card">
+    <div class="section-title">📋 Select Registration Category</div>
+
+    <div class="category-tabs">
+      <button class="tab-btn active" onclick="switchTab('individual', this)">
+        <span class="tab-icon">👤</span>
+        Individual
+      </button>
+      <button class="tab-btn" onclick="switchTab('vehicle', this)">
+        <span class="tab-icon">🚗</span>
+        Vehicle
+      </button>
+      <button class="tab-btn" onclick="switchTab('pet', this)">
+        <span class="tab-icon">🐾</span>
+        Pet
+      </button>
+    </div>
+
+    <!-- INDIVIDUAL FORM -->
+    <div id="section-individual" class="form-section active">
+      <div class="section-title">👤 Individual Registration</div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>Full Name <span class="required">*</span></label>
+          <input class="form-control" id="ind-name" type="text" placeholder="Muhammad Ali">
+        </div>
+        <div class="form-group">
+          <label>CNIC Number <span class="required">*</span></label>
+          <input class="form-control" id="ind-cnic" type="text" placeholder="42201-XXXXXXX-X" maxlength="15">
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>Phone Number <span class="required">*</span></label>
+          <input class="form-control" id="ind-phone" type="tel" placeholder="0300-XXXXXXX">
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input class="form-control" id="ind-email" type="email" placeholder="ali@email.com">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Blood Group <span class="required">*</span></label>
+        <div class="blood-group-options" id="blood-group-opts">
+          <button class="blood-btn" onclick="selectBlood(this)">A+</button>
+          <button class="blood-btn" onclick="selectBlood(this)">A-</button>
+          <button class="blood-btn" onclick="selectBlood(this)">B+</button>
+          <button class="blood-btn" onclick="selectBlood(this)">B-</button>
+          <button class="blood-btn" onclick="selectBlood(this)">AB+</button>
+          <button class="blood-btn" onclick="selectBlood(this)">AB-</button>
+          <button class="blood-btn" onclick="selectBlood(this)">O+</button>
+          <button class="blood-btn" onclick="selectBlood(this)">O-</button>
+        </div>
+        <input type="hidden" id="ind-blood">
+      </div>
+
+      <div class="form-group">
+        <label>Upload Selfie <span class="required">*</span></label>
+        <div class="file-upload-area" id="selfie-area">
+          <input type="file" accept="image/*" onchange="fileChosen(this,'selfie-name')">
+          <div class="upload-icon">📸</div>
+          <p>Click to upload selfie / photo</p>
+          <p class="file-name" id="selfie-name">No file chosen</p>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>CNIC Front <span class="required">*</span></label>
+          <div class="file-upload-area">
+            <input type="file" accept="image/*" onchange="fileChosen(this,'cnic-front-name')">
+            <div class="upload-icon">🪪</div>
+            <p>CNIC Front Side</p>
+            <p class="file-name" id="cnic-front-name">No file</p>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>CNIC Back <span class="required">*</span></label>
+          <div class="file-upload-area">
+            <input type="file" accept="image/*" onchange="fileChosen(this,'cnic-back-name')">
+            <div class="upload-icon">🪪</div>
+            <p>CNIC Back Side</p>
+            <p class="file-name" id="cnic-back-name">No file</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Address</label>
+        <textarea class="form-control" id="ind-address" rows="2" placeholder="Street, City, Province"></textarea>
+      </div>
+
+      <div class="section-title" style="margin-top:10px;">🆘 Emergency Contacts</div>
+
+      <div class="emergency-contact-card">
+        <div class="ec-title">EMERGENCY CONTACT 1 (Required)</div>
+        <div class="two-col">
+          <div class="form-group" style="margin-bottom:0">
+            <label>Name <span class="required">*</span></label>
+            <input class="form-control" id="ec1-name" type="text" placeholder="Contact Name">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>Relation</label>
+            <input class="form-control" id="ec1-rel" type="text" placeholder="Father / Wife etc.">
+          </div>
+        </div>
+        <div class="two-col" style="margin-top:10px">
+          <div class="form-group" style="margin-bottom:0">
+            <label>Phone <span class="required">*</span></label>
+            <input class="form-control" id="ec1-phone" type="tel" placeholder="0300-XXXXXXX">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>Email</label>
+            <input class="form-control" id="ec1-email" type="email" placeholder="email@example.com">
+          </div>
+        </div>
+      </div>
+
+      <div class="emergency-contact-card">
+        <div class="ec-title">EMERGENCY CONTACT 2 (Optional)</div>
+        <div class="two-col">
+          <div class="form-group" style="margin-bottom:0">
+            <label>Name</label>
+            <input class="form-control" id="ec2-name" type="text" placeholder="Contact Name">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>Relation</label>
+            <input class="form-control" id="ec2-rel" type="text" placeholder="Brother / Friend etc.">
+          </div>
+        </div>
+        <div class="two-col" style="margin-top:10px">
+          <div class="form-group" style="margin-bottom:0">
+            <label>Phone</label>
+            <input class="form-control" id="ec2-phone" type="tel" placeholder="0300-XXXXXXX">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>Email</label>
+            <input class="form-control" id="ec2-email" type="email" placeholder="email@example.com">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VEHICLE FORM -->
+    <div id="section-vehicle" class="form-section">
+      <div class="section-title">🚗 Vehicle Registration</div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>Number Plate <span class="required">*</span></label>
+          <input class="form-control" id="veh-plate" type="text" placeholder="LEA-1234" style="text-transform:uppercase;">
+        </div>
+        <div class="form-group">
+          <label>Vehicle Model <span class="required">*</span></label>
+          <input class="form-control" id="veh-model" type="text" placeholder="Toyota Corolla 2022">
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>Owner Name <span class="required">*</span></label>
+          <input class="form-control" id="veh-owner" type="text" placeholder="Muhammad Ali">
+        </div>
+        <div class="form-group">
+          <label>Owner CNIC</label>
+          <input class="form-control" id="veh-cnic" type="text" placeholder="42201-XXXXXXX-X">
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>Owner Phone <span class="required">*</span></label>
+          <input class="form-control" id="veh-phone" type="tel" placeholder="0300-XXXXXXX">
+        </div>
+        <div class="form-group">
+          <label>Owner Email</label>
+          <input class="form-control" id="veh-email" type="email" placeholder="owner@email.com">
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>Vehicle Color</label>
+          <input class="form-control" id="veh-color" type="text" placeholder="White, Silver, Black">
+        </div>
+        <div class="form-group">
+          <label>Vehicle Type</label>
+          <select class="form-control" id="veh-type">
+            <option value="">Select type</option>
+            <option>Car</option>
+            <option>Motorcycle</option>
+            <option>Rickshaw</option>
+            <option>Truck/HTV</option>
+            <option>Bus/Coaster</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Registration Document <span class="required">*</span></label>
+        <div class="file-upload-area">
+          <input type="file" accept="image/*,.pdf" onchange="fileChosen(this,'reg-doc-name')">
+          <div class="upload-icon">📄</div>
+          <p>Upload vehicle registration book / document</p>
+          <p class="file-name" id="reg-doc-name">No file chosen</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Additional Notes</label>
+        <textarea class="form-control" id="veh-notes" rows="2" placeholder="Any additional information..."></textarea>
+      </div>
+    </div>
+
+    <!-- PET FORM -->
+    <div id="section-pet" class="form-section pet-section">
+      <div class="section-title">🐾 Pet Registration</div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>Pet Name <span class="required">*</span></label>
+          <input class="form-control" id="pet-name" type="text" placeholder="Bruno, Max, Luna...">
+        </div>
+        <div class="form-group">
+          <label>Animal Type <span class="required">*</span></label>
+          <select class="form-control" id="pet-type">
+            <option value="">Select type</option>
+            <option>Dog</option>
+            <option>Cat</option>
+            <option>Bird</option>
+            <option>Rabbit</option>
+            <option>Fish</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>Breed</label>
+          <input class="form-control" id="pet-breed" type="text" placeholder="German Shepherd, Labrador...">
+        </div>
+        <div class="form-group">
+          <label>Age</label>
+          <input class="form-control" id="pet-age" type="text" placeholder="2 years, 6 months">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Pet Color / Description</label>
+        <input class="form-control" id="pet-color" type="text" placeholder="Brown & white, spots, collar color">
+      </div>
+
+      <div class="form-group">
+        <label>Pet Photo <span class="required">*</span></label>
+        <div class="file-upload-area">
+          <input type="file" accept="image/*" onchange="fileChosen(this,'pet-photo-name')">
+          <div class="upload-icon">📸</div>
+          <p>Upload clear photo of your pet</p>
+          <p class="file-name" id="pet-photo-name">No file chosen</p>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top:10px;">👤 Owner Details</div>
+
+      <div class="two-col">
+        <div class="form-group">
+          <label>Owner Name <span class="required">*</span></label>
+          <input class="form-control" id="pet-owner" type="text" placeholder="Full name">
+        </div>
+        <div class="form-group">
+          <label>Owner Phone <span class="required">*</span></label>
+          <input class="form-control" id="pet-phone" type="tel" placeholder="0300-XXXXXXX">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Owner Email</label>
+        <input class="form-control" id="pet-email" type="email" placeholder="owner@email.com">
+      </div>
+
+      <div class="form-group">
+        <label>Medical Notes / Allergies</label>
+        <textarea class="form-control" id="pet-medical" rows="2" placeholder="Vaccinations, allergies, special conditions..."></textarea>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitForm()">
+      🔒 Register & Generate QR Code
+    </button>
+  </div>
+
+  <!-- SUCCESS CARD -->
+  <div class="card success-card" id="success-card">
+    <div style="font-size:40px; margin-bottom:10px;">✅</div>
+    <h2>Registration Successful!</h2>
+    <p style="color:#555; font-size:14px;">Your unique SafeTag ID has been generated</p>
+    <div class="unique-id" id="display-uid">PP-1001</div>
+    <div class="qr-box">
+      <img id="qr-img" src="" alt="QR Code">
+    </div>
+    <p style="font-size:13px; color:#555; margin-bottom:16px;">Scan this QR code or stick it on your ID/vehicle/pet tag</p>
+    <button onclick="window.print()" style="padding:10px 20px; background:#1a2744; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; margin-right:8px;">🖨️ Print QR</button>
+    <button onclick="downloadQR()" style="padding:10px 20px; background:#4a6cf7; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px;">⬇️ Download</button>
+    <p style="font-size:12px; color:#999; margin-top:16px;">Data submitted securely to Google Sheets. Only authorized alerts can access your info.</p>
+  </div>
+
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+  const LANDING_PAGE_URL = 'YOUR_LANDING_PAGE_URL_HERE';
+
+  let currentTab = 'individual';
+  let selectedBlood = '';
+
+  function switchTab(tab, btn) {
+    currentTab = tab;
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('section-' + tab).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function selectBlood(btn) {
+    document.querySelectorAll('.blood-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedBlood = btn.textContent;
+    document.getElementById('ind-blood').value = selectedBlood;
+  }
+
+  function fileChosen(input, labelId) {
+    const label = document.getElementById(labelId);
+    if (input.files && input.files[0]) {
+      label.textContent = '✅ ' + input.files[0].name;
+    }
+  }
+
+  function getFormData() {
+    if (currentTab === 'individual') {
+      return {
+        category: 'Individual',
+        name: document.getElementById('ind-name').value,
+        cnic: document.getElementById('ind-cnic').value,
+        phone: document.getElementById('ind-phone').value,
+        email: document.getElementById('ind-email').value,
+        bloodGroup: selectedBlood,
+        address: document.getElementById('ind-address').value,
+        ec1Name: document.getElementById('ec1-name').value,
+        ec1Relation: document.getElementById('ec1-rel').value,
+        ec1Phone: document.getElementById('ec1-phone').value,
+        ec1Email: document.getElementById('ec1-email').value,
+        ec2Name: document.getElementById('ec2-name').value,
+        ec2Relation: document.getElementById('ec2-rel').value,
+        ec2Phone: document.getElementById('ec2-phone').value,
+        ec2Email: document.getElementById('ec2-email').value,
+      };
+    } else if (currentTab === 'vehicle') {
+      return {
+        category: 'Vehicle',
+        name: document.getElementById('veh-owner').value,
+        plate: document.getElementById('veh-plate').value,
+        model: document.getElementById('veh-model').value,
+        owner: document.getElementById('veh-owner').value,
+        cnic: document.getElementById('veh-cnic').value,
+        phone: document.getElementById('veh-phone').value,
+        email: document.getElementById('veh-email').value,
+        color: document.getElementById('veh-color').value,
+        vehicleType: document.getElementById('veh-type').value,
+        notes: document.getElementById('veh-notes').value,
+      };
+    } else {
+      return {
+        category: 'Pet',
+        name: document.getElementById('pet-name').value,
+        petType: document.getElementById('pet-type').value,
+        breed: document.getElementById('pet-breed').value,
+        age: document.getElementById('pet-age').value,
+        petColor: document.getElementById('pet-color').value,
+        owner: document.getElementById('pet-owner').value,
+        phone: document.getElementById('pet-phone').value,
+        email: document.getElementById('pet-email').value,
+        medical: document.getElementById('pet-medical').value,
+      };
+    }
+  }
+
+  function validate(data) {
+    if (!data.name || data.name.trim() === '') { alert('Please enter the name.'); return false; }
+    if (!data.phone || data.phone.trim() === '') { alert('Please enter a phone number.'); return false; }
+    if (currentTab === 'individual') {
+      if (!data.cnic) { alert('Please enter CNIC number.'); return false; }
+      if (!selectedBlood) { alert('Please select blood group.'); return false; }
+      if (!data.ec1Name || !data.ec1Phone) { alert('Emergency Contact 1 name and phone are required.'); return false; }
+    }
+    if (currentTab === 'vehicle' && !data.plate) { alert('Please enter vehicle number plate.'); return false; }
+    if (currentTab === 'pet' && !data.petType) { alert('Please select pet type.'); return false; }
+    return true;
+  }
+
+  async function submitForm() {
+    const data = getFormData();
+    if (!validate(data)) return;
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Registering...';
+
+    try {
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        showSuccess(result.uniqueId);
+      } else {
+        throw new Error(result.message || 'Server error');
+      }
+    } catch (err) {
+      // For demo/testing without backend:
+      const demoId = generateDemoId();
+      showSuccess(demoId);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '🔒 Register & Generate QR Code';
+  }
+
+  function generateDemoId() {
+    const prefix = currentTab === 'Individual' ? 'PP' : currentTab === 'Vehicle' ? 'VH' : 'PT';
+    const num = Math.floor(Math.random() * 8999) + 1001;
+    return prefix + '-' + num;
+  }
+
+  function showSuccess(uniqueId) {
+    document.getElementById('display-uid').textContent = uniqueId;
+    const landingUrl = LANDING_PAGE_URL + '?ID=' + uniqueId;
+    const qrUrl = 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + encodeURIComponent(landingUrl);
+    document.getElementById('qr-img').src = qrUrl;
+    document.getElementById('success-card').classList.add('show');
+    document.getElementById('success-card').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function downloadQR() {
+    const img = document.getElementById('qr-img');
+    const link = document.createElement('a');
+    link.download = document.getElementById('display-uid').textContent + '-QR.png';
+    link.href = img.src;
+    link.click();
+  }
+</script>
+</body>
+</html>

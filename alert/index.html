@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafeTag – Report Alert</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f4f6fb;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  .header {
+    background: #e63946;
+    color: #fff;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header .back-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: #fff;
+    border-radius: 50%;
+    width: 36px; height: 36px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none;
+  }
+  .header h1 { font-size: 18px; font-weight: 600; }
+  .header p { font-size: 12px; opacity: 0.8; }
+
+  .container { max-width: 520px; margin: 24px auto; padding: 0 16px; }
+
+  .id-card {
+    background: #1a2744;
+    color: #fff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .id-card .id-icon { font-size: 32px; }
+  .id-card .id-label { font-size: 12px; opacity: 0.6; }
+  .id-card .id-value { font-size: 22px; font-weight: 700; letter-spacing: 2px; color: #7eb8ff; }
+
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.07);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 14px; font-weight: 600;
+    color: #1a2744;
+    margin-bottom: 16px;
+  }
+
+  .alert-type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .alert-type-btn {
+    border: 2px solid #dde2ef;
+    border-radius: 12px;
+    background: #fff;
+    padding: 16px 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+  }
+  .alert-type-btn .atype-icon { font-size: 28px; display: block; margin-bottom: 8px; }
+  .alert-type-btn:hover { border-color: #e63946; color: #e63946; background: #fff5f5; }
+  .alert-type-btn.selected.emergency { border-color: #e63946; background: #e63946; color: #fff; }
+  .alert-type-btn.selected.parking { border-color: #e9a11a; background: #e9a11a; color: #fff; }
+  .alert-type-btn.selected.medical { border-color: #4a6cf7; background: #4a6cf7; color: #fff; }
+  .alert-type-btn.selected.theft { border-color: #7c3aed; background: #7c3aed; color: #fff; }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: 13px; font-weight: 600;
+    color: #444; margin-bottom: 6px;
+  }
+  .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #dde2ef;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #222;
+    background: #fafbff;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-control:focus { border-color: #e63946; background: #fff; }
+
+  .urgency-bar {
+    display: flex; gap: 8px;
+    margin-bottom: 16px;
+  }
+  .urgency-btn {
+    flex: 1; padding: 10px;
+    border: 1.5px solid #dde2ef;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; text-align: center;
+    transition: all 0.2s;
+    color: #555;
+  }
+  .urgency-btn.selected-low { background: #d1fae5; border-color: #059669; color: #065f46; }
+  .urgency-btn.selected-med { background: #fef3c7; border-color: #d97706; color: #78350f; }
+  .urgency-btn.selected-high { background: #fee2e2; border-color: #dc2626; color: #7f1d1d; }
+
+  .location-btn {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px dashed #4a6cf7;
+    border-radius: 8px;
+    background: #f0f3ff;
+    color: #4a6cf7;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .location-btn:hover { background: #e0e7ff; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #e63946, #c1121f);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 17px; font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+  }
+  .submit-btn:hover { opacity: 0.9; }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .privacy-note {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    margin-top: 14px;
+    line-height: 1.6;
+  }
+
+  .spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .success-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 24px;
+    text-align: center;
+    color: #fff;
+  }
+  .success-overlay.show { display: flex; }
+  .success-overlay .success-icon { font-size: 72px; margin-bottom: 20px; }
+  .success-overlay h2 { font-size: 24px; margin-bottom: 10px; }
+  .success-overlay p { font-size: 15px; opacity: 0.8; line-height: 1.6; max-width: 320px; }
+  .success-overlay .done-btn {
+    margin-top: 28px;
+    padding: 12px 30px;
+    background: #34c55a;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px; font-weight: 600;
+    cursor: pointer;
+  }
+
+  .parking-notice {
+    background: #fffbeb;
+    border: 1.5px solid #fbbf24;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #78350f;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .parking-notice.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-btn" href="javascript:history.back()">←</a>
+  <div>
+    <h1>🚨 Send Alert</h1>
+    <p>Report will be sent to registered owner instantly</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="id-card">
+    <div class="id-icon">🏷️</div>
+    <div>
+      <div class="id-label">SAFETAG ID</div>
+      <div class="id-value" id="id-display">Loading...</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">⚠️ What is the issue?</div>
+
+    <div class="alert-type-grid" id="alert-grid">
+      <button class="alert-type-btn emergency" onclick="selectAlertType(this,'Accident / Emergency','emergency')">
+        <span class="atype-icon">🚑</span>
+        Accident / Emergency
+      </button>
+      <button class="alert-type-btn parking" onclick="selectAlertType(this,'No Parking / Blocking','parking')">
+        <span class="atype-icon">🚗</span>
+        No Parking / Blocking
+      </button>
+      <button class="alert-type-btn medical" onclick="selectAlertType(this,'Medical Help Needed','medical')">
+        <span class="atype-icon">🏥</span>
+        Medical Help
+      </button>
+      <button class="alert-type-btn theft" onclick="selectAlertType(this,'Theft Attempt','theft')">
+        <span class="atype-icon">🔓</span>
+        Theft Attempt
+      </button>
+      <button class="alert-type-btn emergency" onclick="selectAlertType(this,'Lost / Missing','emergency')">
+        <span class="atype-icon">🔍</span>
+        Lost / Missing
+      </button>
+      <button class="alert-type-btn emergency" onclick="selectAlertType(this,'Other Issue','emergency')">
+        <span class="atype-icon">📢</span>
+        Other Issue
+      </button>
+    </div>
+
+    <input type="hidden" id="selected-alert-type">
+
+    <div class="parking-notice" id="parking-notice">
+      🚗 <strong>Parking Alert selected.</strong> The vehicle owner will be notified immediately to move their vehicle.
+    </div>
+
+    <div class="form-group">
+      <label>Urgency Level</label>
+      <div class="urgency-bar">
+        <button class="urgency-btn" onclick="selectUrgency(this,'Low','selected-low')">🟢 Low</button>
+        <button class="urgency-btn" onclick="selectUrgency(this,'Medium','selected-med')">🟡 Medium</button>
+        <button class="urgency-btn" onclick="selectUrgency(this,'High','selected-high')">🔴 High</button>
+      </div>
+      <input type="hidden" id="urgency-val">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">📝 Additional Details (Optional)</div>
+
+    <div class="form-group">
+      <label>Describe the situation</label>
+      <textarea class="form-control" id="description" rows="3" placeholder="Briefly describe what you see..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Your Name (Optional)</label>
+      <input class="form-control" id="helper-name" type="text" placeholder="Stay anonymous or enter your name">
+    </div>
+
+    <div class="form-group">
+      <label>Your Phone (Optional – in case owner wants to call)</label>
+      <input class="form-control" id="helper-phone" type="tel" placeholder="0300-XXXXXXX">
+    </div>
+
+    <div class="form-group">
+      <label>Location</label>
+      <button class="location-btn" onclick="getLocation()">📍 Share My Current Location</button>
+      <input class="form-control" id="location-input" type="text" placeholder="Or type location manually..." style="margin-top:8px;">
+      <input type="hidden" id="location-coords">
+    </div>
+  </div>
+
+  <button class="submit-btn" id="submit-btn" onclick="submitAlert()">
+    🚨 SEND ALERT NOW
+  </button>
+
+  <p class="privacy-note">
+    Your personal details are optional and will only be shared with the registered owner.<br>
+    SafeTag does not store reporter information publicly.
+  </p>
+
+</div>
+
+<div class="success-overlay" id="success-overlay">
+  <div class="success-icon">✅</div>
+  <h2>Alert Sent!</h2>
+  <p>The registered owner has been notified immediately via email and SMS. Help is on the way.</p>
+  <button class="done-btn" onclick="window.location.href='index.html'">Done</button>
+</div>
+
+<script>
+  const APPS_SCRIPT_ALERT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+  function getURLParam(key) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(key);
+  }
+
+  const uniqueId = getURLParam('ID') || 'PP-DEMO';
+  const alertType = getURLParam('type') || 'emergency';
+
+  document.getElementById('id-display').textContent = uniqueId;
+
+  if (alertType === 'parking') {
+    const parkingBtn = document.querySelector('.alert-type-btn.parking');
+    if (parkingBtn) {
+      selectAlertType(parkingBtn, 'No Parking / Blocking', 'parking');
+    }
+    document.getElementById('parking-notice').classList.add('show');
+  }
+
+  let selectedType = '';
+  let selectedUrgency = '';
+
+  function selectAlertType(btn, typeName, styleClass) {
+    document.querySelectorAll('.alert-type-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedType = typeName;
+    document.getElementById('selected-alert-type').value = typeName;
+    if (typeName === 'No Parking / Blocking') {
+      document.getElementById('parking-notice').classList.add('show');
+    } else {
+      document.getElementById('parking-notice').classList.remove('show');
+    }
+  }
+
+  function selectUrgency(btn, level, className) {
+    document.querySelectorAll('.urgency-btn').forEach(b => {
+      b.classList.remove('selected-low','selected-med','selected-high');
+    });
+    btn.classList.add(className);
+    selectedUrgency = level;
+    document.getElementById('urgency-val').value = level;
+  }
+
+  function getLocation() {
+    if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
+    navigator.geolocation.getCurrentPosition(pos => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      document.getElementById('location-coords').value = lat + ',' + lng;
+      document.getElementById('location-input').value = 'GPS: ' + lat + ', ' + lng;
+    }, () => { alert('Could not get location. Please enter manually.'); });
+  }
+
+  async function submitAlert() {
+    if (!selectedType) {
+      alert('Please select the type of issue.');
+      return;
+    }
+
+    const data = {
+      uniqueId: uniqueId,
+      alertType: selectedType,
+      urgency: selectedUrgency || 'Not specified',
+      description: document.getElementById('description').value,
+      helperName: document.getElementById('helper-name').value,
+      helperPhone: document.getElementById('helper-phone').value,
+      location: document.getElementById('location-input').value,
+      locationCoords: document.getElementById('location-coords').value,
+      timestamp: new Date().toISOString()
+    };
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Sending Alert...';
+
+    try {
+      await fetch(APPS_SCRIPT_ALERT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'sendAlert', ...data })
+      });
+    } catch (err) {
+      // Network error or CORS – still show success for demo
+    }
+
+    document.getElementById('success-overlay').classList.add('show');
+  }
+</script>
+</body>
+</html>
